@@ -1,0 +1,20 @@
+{
+  "extends": "eslint-config-egg",
+  "rules": {
+    "semi": [
+      0
+    ],
+    "arrow-parens": [
+      2,
+      "always"
+    ],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "array-bracket-spacing": [
+      "never"
+    ]
+  }
+  
+}
