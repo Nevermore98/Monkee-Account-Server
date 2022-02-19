@@ -16,6 +16,7 @@
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
     "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
     "egg-mock": "^3.21.0",

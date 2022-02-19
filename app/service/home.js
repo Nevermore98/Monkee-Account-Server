@@ -17,5 +17,15 @@ class HomeService extends Service {
       return null
     }
   }
+  async addUser(name) {
+    const { ctx, app } = this
+    try {
+      const result = await app.mysql.insert('list', { name })
+      return result
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
 }
 module.exports = HomeService
