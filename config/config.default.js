@@ -31,6 +31,11 @@ module.exports = (appInfo) => {
     domainWhiteList: ['*'] // 配置白名单
   }
 
+  config.jwt = {
+    // 加密字符串
+    secret: 'Nevermore98'
+  }
+
   config.view = {
     // 左边写成.html后缀，会自动渲染.html文件
     // 将 view 文件夹下的 .html 后缀的文件，识别为 .ejs
@@ -45,7 +50,7 @@ module.exports = (appInfo) => {
       user: 'root',
       password: '123456',
       // 数据库名
-      database: 'test'
+      database: 'monkee-account-react'
     },
     // 是否加载到 app 上，默认开启
     app: true,
