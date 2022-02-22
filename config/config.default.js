@@ -21,6 +21,7 @@ module.exports = (appInfo) => {
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
+    uploadDir: 'app/public/upload'
   }
 
   config.security = {
@@ -56,6 +57,16 @@ module.exports = (appInfo) => {
     app: true,
     // 是否加载到 agent 上，默认关闭
     agent: false
+  }
+  // 文件接受方式有 file 和 stream
+  config.multipart = {
+    mode: 'file'
+  }
+
+  config.cors = {
+    origin: '*', // 允许所有跨域访问
+    credentials: true, // 允许 Cookie 跨域跨域
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
   }
 
   return {

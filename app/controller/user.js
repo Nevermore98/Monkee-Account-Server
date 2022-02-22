@@ -1,12 +1,13 @@
 'use strict'
 
 const defaultAvatar =
-  'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e247c361f0b8a7aeb6c2a.png'
+  '(https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/cat&duck.jpg)'
 
 const Controller = require('egg').Controller
 // TODO 可封装一层 controller
 
 class UserController extends Controller {
+  // 注册
   async register() {
     const { ctx } = this
     const { username, password } = ctx.request.body
@@ -19,9 +20,9 @@ class UserController extends Controller {
       }
       return
     }
-    // 验证数据库内是否已经有该账户名
+    // 验证数据库内是否存在该账户名
     const userInfo = await ctx.service.user.getUserByName(username)
-    // 判断是否已经存在
+    // 判断是否存在
     if (userInfo && userInfo.id) {
       ctx.body = {
         code: 500,
@@ -110,6 +111,57 @@ class UserController extends Controller {
       data: {
         ...decode
       }
+    }
+  }
+  // 获取用户信息
+  async getUserInfo() {
+    const { ctx, app } = this
+    const token = ctx.request.header.authorization
+    const decode = await app.jwt.verify(token, app.config.jwt.secret)
+    const userInfo = await ctx.service.user.getUserByName(decode.username)
+    ctx.body = {
+      code: 200,
+      msg: '请求成功',
+      data: {
+        id: userInfo.id,
+        username: userInfo.username,
+        signature: userInfo.signature || '',
+        avatar: userInfo.avatar || defaultAvatar
+      }
+    }
+  }
+
+  // 修改用户信息
+  async editUserInfo() {
+    const { ctx, app } = this
+    const { signature = '', avatar = '' } = ctx.request.body
+
+    try {
+      let user_id
+      const token = ctx.request.header.authorization
+      const decode = await app.jwt.verify(token, app.config.jwt.secret)
+      if (!decode) return
+      user_id = decode.id
+
+      const userInfo = await ctx.service.user.getUserByName(decode.username)
+      const result = await ctx.service.user.editUserInfo({
+        ...userInfo,
+        signature,
+        avatar
+      })
+
+      ctx.body = {
+        code: 200,
+        msg: '修改用户信息成功',
+        data: {
+          id: user_id,
+          signature,
+          username: userInfo.username,
+          avatar
+        }
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 }
