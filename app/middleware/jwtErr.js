@@ -2,12 +2,11 @@
 
 module.exports = (secret) => {
   return async function jwtErr(ctx, next) {
-    // 若是没有 token，返回的是 null 字符串
     const token = ctx.request.header.authorization
     let decode
-    if (token != 'null' && token) {
+    if (token) {
       try {
-        // 验证token
+        // 验证 token
         decode = ctx.app.jwt.verify(token, secret)
         await next()
       } catch (error) {
