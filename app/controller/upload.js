@@ -8,34 +8,34 @@ const path = require('path')
 const Controller = require('egg').Controller
 
 class UploadController extends Controller {
-  async upload() {
+  async uploadAvatar() {
     const { ctx } = this
-
+    // 获取文件数组的第一项
     let file = ctx.request.files[0]
-
     let uploadDir = ''
-
     try {
-      // ctx.request.files[0] 表示获取第一个文件，若前端上传多个文件则可以遍历这个数组对象
       let f = fs.readFileSync(file.filepath)
-      // 1.获取当前日期
-      let day = moment(new Date()).format('YYYYMMDD')
-      // 2.创建图片保存的路径
-      let dir = path.join(this.config.uploadDir, day)
-      let date = Date.now() // 毫秒数
-      await mkdirp(dir) // 不存在就创建目录
-      // 返回图片保存的路径
-      uploadDir = path.join(dir, date + path.extname(file.filename))
+      // 获取当前日期，作为文件夹名
+      let date = moment(new Date()).format('YYYYMMDD')
+      // 创建图片保存的路径
+      console.log(this.config.uploadDir)
+      let dir = path.join(this.config.uploadDir, date)
+      // 获取当前时间戳，作为文件名
+      let timestamp = Date.now()
+      // 创建目录
+      await mkdirp(dir)
+      // 图片的绝对路径
+      uploadDir = path.join(dir, timestamp + path.extname(file.filename))
       // 写入文件夹
       fs.writeFileSync(uploadDir, f)
     } finally {
       // 清除临时文件
       ctx.cleanupRequestFiles()
     }
-
     ctx.body = {
       code: 200,
-      msg: '上传成功',
+      msg: '上传头像成功',
+      // 去除掉路径上的 app
       data: uploadDir.replace(/app/, '')
     }
   }
