@@ -84,8 +84,9 @@ class UserController extends Controller {
     const token = app.jwt.sign(
       {
         id: userInfo.id,
-        username: userInfo.username,
-        exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // token 有效期为 24 小时
+        username: userInfo.username
+        // TODO 暂时设为不失效
+        // exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // token 有效期为 24 小时
       },
       app.config.jwt.secret
     )
