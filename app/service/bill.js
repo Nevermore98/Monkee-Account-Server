@@ -32,6 +32,7 @@ class BillService extends Service {
   async detail(id, user_id) {
     const { ctx, app } = this
     try {
+      // { id, user_id } 是 {id: id, user_id: user_id} 的缩写
       const result = await app.mysql.get('bill', { id, user_id })
       return result
     } catch (error) {
@@ -53,6 +54,17 @@ class BillService extends Service {
           user_id: params.user_id
         }
       )
+      return result
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
+  // 删除账单详情
+  async delete(id, user_id) {
+    const { ctx, app } = this
+    try {
+      let result = await app.mysql.delete('bill')
       return result
     } catch (error) {
       console.log(error)
