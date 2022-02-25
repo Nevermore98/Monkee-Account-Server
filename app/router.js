@@ -20,6 +20,8 @@ module.exports = (app) => {
   router.post('/api/bill/add', _jwt, controller.bill.add)
   // 获取账单列表
   router.get('/api/bill/list', _jwt, controller.bill.list)
+  // 获取账单详情
+  router.get('/api/bill/detail', _jwt, controller.bill.detail)
   // 测试
   router.get('/api/user/test', _jwt, controller.user.test) // 放入第二个参数，作为中间件过滤项
 }
