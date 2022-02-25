@@ -11,7 +11,7 @@ class BillController extends Controller {
       amount,
       category_id,
       category_name,
-      date = dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      datetime = dayjs().format('YYYY-MM-DD HH:mm:ss'),
       type,
       remark = ''
     } = ctx.request.body
@@ -35,7 +35,7 @@ class BillController extends Controller {
         amount,
         category_id,
         category_name,
-        date,
+        datetime,
         type,
         remark,
         user_id
@@ -76,33 +76,25 @@ class BillController extends Controller {
       const filtered_bill = total_bill.filter((item) => {
         if (category_id !== 'all') {
           return (
-            dayjs(item.date).format('YYYY-MM') === selected_month &&
+            dayjs(item.datetime).format('YYYY-MM') === selected_month &&
             category_id === item.category_id
           )
         }
-        return dayjs(item.date).format('YYYY-MM') === selected_month
+        return dayjs(item.datetime).format('YYYY-MM') === selected_month
       })
       console.log('filtered_bill', filtered_bill)
       // 格式化数据
       let list_map = filtered_bill
         .reduce((curr, item) => {
           // 把第一个账单项的时间格式化为 YYYY-MM-DD
-          const date = dayjs(item.date).format('YYYY-MM-DD')
-          // 如果能在累加的数组中找到当前项日期 date，那么在数组中的加入当前项到 daily_bill 数组。当天账单
-          if (
-            curr &&
-            curr.length &&
-            curr.findIndex((item) => item.date === date) > -1
-          ) {
-            const index = curr.findIndex((item) => item.date === date)
+          const date = dayjs(item.datetime).format('YYYY-MM-DD')
+          // 如果能在累加的数组中找到当前项日期 date ，那么在数组中的加入当前项到 daily_bill 数组。当天账单
+          if (curr?.findIndex((item) => item.datetime == date) > -1) {
+            const index = curr.findIndex((item) => item.datetime === date)
             curr[index].daily_bill.push(item)
           }
           // 如果在累加的数组中找不到当前项日期的，那么再新建一项。
-          if (
-            curr &&
-            curr.length &&
-            curr.findIndex((item) => item.date === date) === -1
-          ) {
+          if (curr?.findIndex((item) => item.datetime == date) === -1) {
             curr.push({
               date,
               daily_bill: [item]
@@ -128,7 +120,7 @@ class BillController extends Controller {
       // 计算当月总收入和支出
       // 获取当月账单列表
       let monthly_bill = total_bill.filter(
-        (item) => dayjs(item.date).format('YYYY-MM') === selected_month
+        (item) => dayjs(item.datetime).format('YYYY-MM') === selected_month
       )
       // 累加计算支出
       let total_expense = monthly_bill.reduce((curr, item) => {

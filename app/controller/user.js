@@ -4,6 +4,8 @@ const defaultAvatar =
   '(https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/cat&duck.jpg)'
 
 const Controller = require('egg').Controller
+const dayjs = require('dayjs')
+
 // TODO 可封装一层 controller
 
 class UserController extends Controller {
@@ -38,7 +40,7 @@ class UserController extends Controller {
       password,
       signature: '世界和平。',
       avatar: defaultAvatar,
-      create_time: new Date()
+      create_datetime: dayjs().format('YYYY-MM-DD HH:mm:ss')
     })
 
     if (result) {
