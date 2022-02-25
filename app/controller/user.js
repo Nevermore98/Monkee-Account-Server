@@ -1,7 +1,7 @@
 'use strict'
 
 const defaultAvatar =
-  '(https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/cat&duck.jpg)'
+  'https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/cat&duck.jpg'
 
 const Controller = require('egg').Controller
 const dayjs = require('dayjs')
@@ -117,7 +117,7 @@ class UserController extends Controller {
     }
   }
   // 获取用户信息
-  async getUserInfo() {
+  async get_user_info() {
     const { ctx, app } = this
     const token = ctx.request.header.authorization
     const decode = await app.jwt.verify(token, app.config.jwt.secret)
@@ -135,7 +135,7 @@ class UserController extends Controller {
   }
 
   // 修改用户信息
-  async editUserInfo() {
+  async edit_user_info() {
     const { ctx, app } = this
     const { signature = '', avatar = '' } = ctx.request.body
 
@@ -147,7 +147,7 @@ class UserController extends Controller {
       user_id = decode.id
 
       const userInfo = await ctx.service.user.getUserByName(decode.username)
-      const result = await ctx.service.user.editUserInfo({
+      const result = await ctx.service.user.edit_user_info({
         ...userInfo,
         signature,
         avatar

@@ -11,11 +11,11 @@ module.exports = (app) => {
   // 登录
   router.post('/api/user/login', controller.user.login)
   // 获取用户信息
-  router.get('/api/user/userInfo', _jwt, controller.user.getUserInfo)
+  router.get('/api/user/info', _jwt, controller.user.get_user_info)
   // 修改用户信息（目前仅能修改签名）
-  router.patch('/api/user/userInfo', _jwt, controller.user.editUserInfo)
+  router.patch('/api/user/info', _jwt, controller.user.edit_user_info)
   // 上传头像
-  router.post('/api/uploadAvatar', controller.upload.uploadAvatar)
+  router.post('/api/avatar', controller.upload.upload_avatar)
   // 添加账单
   router.post('/api/bill/add', _jwt, controller.bill.add)
   // 获取账单列表

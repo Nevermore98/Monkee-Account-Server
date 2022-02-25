@@ -8,7 +8,7 @@ const path = require('path')
 const Controller = require('egg').Controller
 
 class UploadController extends Controller {
-  async uploadAvatar() {
+  async upload_avatar() {
     const { ctx } = this
     // 获取文件数组的第一项
     let file = ctx.request.files[0]

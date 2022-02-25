@@ -23,7 +23,7 @@
       formData.append('file', file)
       console.log('formData', formData)
       // 调用服务端上传接口。
-      fetch('http://localhost:7001/api/uploadAvatar', {
+      fetch('http://localhost:7001/api/avatar', {
         method: 'POST',
         body: formData
       }).then(res => {

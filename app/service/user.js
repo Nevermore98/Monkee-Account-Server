@@ -26,7 +26,7 @@ class UserService extends Service {
     }
   }
   // 修改用户信息
-  async editUserInfo(params) {
+  async edit_user_info(params) {
     const { ctx, app } = this
     try {
       let result = await app.mysql.update(
