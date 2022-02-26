@@ -26,6 +26,8 @@ module.exports = (app) => {
   router.patch('/api/bill/detail', _jwt, controller.bill.update)
   // 删除账单详情
   router.delete('/api/bill/detail', _jwt, controller.bill.delete)
+  // 获取（月度）统计数据
+  router.get('/api/bill/statistics', _jwt, controller.bill.monthly_statistics)
   // 测试
   router.get('/api/user/test', _jwt, controller.user.test) // 放入第二个参数，作为中间件过滤项
 }

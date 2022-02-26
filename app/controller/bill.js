@@ -17,7 +17,7 @@ class BillController extends Controller {
     } = ctx.request.body
 
     // 判空处理
-    if (!amount || !category_id || !category_name || !date || !type) {
+    if (!amount || !category_id || !category_name || !datetime || !type) {
       ctx.body = {
         code: 400,
         msg: '参数错误',
@@ -89,12 +89,12 @@ class BillController extends Controller {
           // 把第一个账单项的时间格式化为 YYYY-MM-DD
           const date = dayjs(item.datetime).format('YYYY-MM-DD')
           // 如果能在累加的数组中找到当前项日期 date ，那么在数组中的加入当前项到 daily_bill 数组。当天账单
-          if (curr?.findIndex((item) => item.datetime == date) > -1) {
+          if (curr?.findIndex((item) => item.datetime === date) > -1) {
             const index = curr.findIndex((item) => item.datetime === date)
             curr[index].daily_bill.push(item)
           }
           // 如果在累加的数组中找不到当前项日期的，那么再新建一项。
-          if (curr?.findIndex((item) => item.datetime == date) === -1) {
+          if (curr?.findIndex((item) => item.datetime === date) === -1) {
             curr.push({
               date,
               daily_bill: [item]
@@ -266,6 +266,104 @@ class BillController extends Controller {
         code: 200,
         msg: '删除账单成功',
         data: null
+      }
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null
+      }
+    }
+  }
+  // 获取月度统计数据
+  async monthly_statistics() {
+    const { ctx, app } = this
+    const { datetime = '' } = ctx.query
+    const token = ctx.request.header.authorization
+    const decode = await app.jwt.verify(token, app.config.jwt.secret)
+    if (!decode) return
+    const user_id = decode.id
+
+    if (!datetime) {
+      ctx.body = {
+        code: 400,
+        msg: 'datetime 不能为空',
+        data: null
+      }
+      return
+    }
+    try {
+      const result = await ctx.service.bill.list(user_id)
+      // 所选月份的月初时间的秒时间戳
+      const start = dayjs(datetime).startOf('month').unix()
+      // 所选月份的月末时间的秒时间戳
+      const end = dayjs(datetime).endOf('month').unix()
+      const monthly_bill = result.filter((item) => {
+        const timestamp = dayjs(item.datetime).unix()
+        /**
+         * 这里是闭区间，本月的 1 号 00:00:00，本月的月末 23:59:59。
+         * 添加往日收支记录，时间就记为 23:59:59，避免记入下月账单 */
+        if (timestamp >= start && timestamp <= end) {
+          return item
+        }
+      })
+
+      // 月度总支出
+      const total_expense = monthly_bill.reduce((arr, cur) => {
+        if (cur.type === 1) {
+          arr += Number(cur.amount)
+        }
+        return arr
+      }, 0)
+
+      // 月度总收入
+      const total_income = monthly_bill.reduce((arr, cur) => {
+        if (cur.type === 2) {
+          arr += Number(cur.amount)
+        }
+        return arr
+      }, 0)
+
+      /** 收支种类统计，用于饼图统计
+       *  category_statistics 初始值为 []
+       *  通过 findIndex，查找 arr 内，有无和 cur 相同种类的账单
+       */
+      let category_statistics = monthly_bill.reduce((arr, cur) => {
+        const index = arr.findIndex(
+          (item) => item.category_id === cur.category_id
+        )
+        console.log('index', index)
+        if (index === -1) {
+          arr.push({
+            category_id: cur.category_id,
+            category_name: cur.category_name,
+            type: cur.type,
+            total_category_amount: Number(cur.amount)
+          })
+        }
+        if (index > -1) {
+          arr[0].total_category_amount += Number(cur.amount)
+        }
+        return arr
+      }, [])
+      // 每项精度保留 2 位小数，并按 total_category_amount 降序
+      category_statistics = category_statistics
+        .map((item) => {
+          item.total_category_amount = Number(
+            Number(item.total_category_amount).toFixed(2)
+          )
+          return item
+        })
+        .sort((a, b) => b.total_category_amount - a.total_category_amount)
+
+      ctx.body = {
+        code: 200,
+        msg: '获取月度统计数据成功',
+        data: {
+          total_expense: Number(total_expense).toFixed(2),
+          total_income: Number(total_income).toFixed(2),
+          category_statistics: category_statistics || []
+        }
       }
     } catch (error) {
       ctx.body = {
