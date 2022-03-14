@@ -64,7 +64,10 @@ class BillService extends Service {
   async delete(id, user_id) {
     const { ctx, app } = this
     try {
-      let result = await app.mysql.delete('bill')
+      let result = await app.mysql.delete('bill', {
+        id: id,
+        user_id: user_id
+      })
       return result
     } catch (error) {
       console.log(error)

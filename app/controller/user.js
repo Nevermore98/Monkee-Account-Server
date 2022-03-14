@@ -6,8 +6,6 @@ const defaultAvatar =
 const Controller = require('egg').Controller
 const dayjs = require('dayjs')
 
-// TODO 可封装一层 controller
-
 class UserController extends Controller {
   // 注册
   async register() {
