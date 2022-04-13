@@ -61,12 +61,25 @@ module.exports = (appInfo) => {
   // 文件接受方式有 file 和 stream
   config.multipart = {
     mode: 'file'
+    // fileSize: '500kb' // TODO 上传文件大小
   }
 
   config.cors = {
     origin: '*', // 允许所有跨域访问
     credentials: true, // 允许 Cookie 跨域跨域
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
+  }
+  // config.cors = {
+  //   credentials: true,
+  //   origin: (ctx) => ctx.get('origin')
+  // }
+
+  config.cluster = {
+    listen: {
+      path: '',
+      port: 7009,
+      hostname: '0.0.0.0'
+    }
   }
 
   return {

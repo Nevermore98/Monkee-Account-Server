@@ -36,7 +36,7 @@ class UserController extends Controller {
     const result = await ctx.service.user.register({
       username,
       password,
-      signature: '世界和平。',
+      signature: '这家伙很懒，什么都没留下。',
       avatar: defaultAvatar,
       create_datetime: dayjs().format('YYYY-MM-DD HH:mm:ss')
     })
@@ -84,9 +84,8 @@ class UserController extends Controller {
     const token = app.jwt.sign(
       {
         id: userInfo.id,
-        username: userInfo.username
-        // TODO 暂时设为不失效
-        // exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // token 有效期为 24 小时
+        username: userInfo.username,
+        exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // token 有效期为 24 小时
       },
       app.config.jwt.secret
     )
@@ -163,6 +162,63 @@ class UserController extends Controller {
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+  // 修改用户密码
+  async modify_password() {
+    const { ctx, app } = this
+    const { old_pass = '', new_pass = '', new_pass2 = '' } = ctx.request.body
+
+    try {
+      let user_id
+      const token = ctx.request.header.authorization
+      const decode = await app.jwt.verify(token, app.config.jwt.secret)
+      if (!decode) return
+      if (decode.username === 'admin') {
+        ctx.body = {
+          code: 400,
+          msg: '管理员账户，不允许修改密码！',
+          data: null
+        }
+        return
+      }
+      user_id = decode.id
+      const userInfo = await ctx.service.user.getUserByName(decode.username)
+
+      if (old_pass !== userInfo.password) {
+        ctx.body = {
+          code: 400,
+          msg: '原密码错误',
+          data: null
+        }
+        return
+      }
+
+      if (new_pass !== new_pass2) {
+        ctx.body = {
+          code: 400,
+          msg: '新密码不一致',
+          data: null
+        }
+        return
+      }
+
+      const result = await ctx.service.user.modify_password({
+        ...userInfo,
+        password: new_pass
+      })
+
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: null
+      }
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null
+      }
     }
   }
 }

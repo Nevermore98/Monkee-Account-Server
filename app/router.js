@@ -13,7 +13,15 @@ module.exports = (app) => {
   // 获取用户信息
   router.get('/api/user/info', _jwt, controller.user.get_user_info)
   // 修改用户信息（目前仅能修改签名）
+  router.post(
+    '/api/user/modify-password',
+    _jwt,
+    controller.user.modify_password
+  )
+  // 修改用户密码
   router.patch('/api/user/info', _jwt, controller.user.edit_user_info)
+  // 获取消费种类列表
+  router.get('/api/category/list', _jwt, controller.category.list)
   // 上传头像
   router.post('/api/avatar', controller.upload.upload_avatar)
   // 添加账单

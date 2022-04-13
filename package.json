@@ -1,5 +1,5 @@
 {
-  "name": "example2",
+  "name": "monkee-account-server",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -32,8 +32,8 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-example2",
-    "stop": "egg-scripts stop --title=egg-server-example2",
+    "start": "egg-scripts start --daemon --title=monkee-account-server --ignore-stderr",
+    "stop": "egg-scripts stop --title=monkee-account-server",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",

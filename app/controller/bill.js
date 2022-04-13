@@ -88,12 +88,6 @@ class BillController extends BaseController {
               (item) => dayjs(item.datetime).format('YYYY-MM-DD') === date
             ) > -1
           ) {
-            // console.log(item.datetime.split(' ')[0])
-            // console.log(item.datetime.split(' ')[0] === date)
-            // const index2 = curr.findIndex(
-            //   (item) => item.datetime.split(' ')[0] === date
-            // )
-            // console.log('index2', index2)
             const index = curr.findIndex(
               (item) => dayjs(item.datetime).format('YYYY-MM-DD') === date
             )
@@ -175,7 +169,7 @@ class BillController extends BaseController {
     }
 
     try {
-      const detail = await ctx.service.bill.detail(id, user_id)
+      const data = await ctx.service.bill.detail(id, user_id)
       this.success(data, '获取账单详情成功')
     } catch (error) {
       this.serviceError()
