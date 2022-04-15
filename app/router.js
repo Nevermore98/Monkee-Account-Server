@@ -13,13 +13,13 @@ module.exports = (app) => {
   // 获取用户信息
   router.get('/api/user/info', _jwt, controller.user.get_user_info)
   // 修改用户信息（目前仅能修改签名）
-  router.post(
-    '/api/user/modify-password',
+  router.put('/api/user/info', _jwt, controller.user.edit_user_info)
+  // 修改用户密码
+  router.put(
+    '/api/user/password',
     _jwt,
     controller.user.modify_password
   )
-  // 修改用户密码
-  router.patch('/api/user/info', _jwt, controller.user.edit_user_info)
   // 获取消费种类列表
   router.get('/api/category/list', _jwt, controller.category.list)
   // 上传头像
@@ -31,7 +31,7 @@ module.exports = (app) => {
   // 获取账单详情
   router.get('/api/bill/detail', _jwt, controller.bill.detail)
   // 更新账单详情
-  router.patch('/api/bill/detail', _jwt, controller.bill.update)
+  router.put('/api/bill/detail', _jwt, controller.bill.update)
   // 删除账单详情
   router.delete('/api/bill/detail', _jwt, controller.bill.delete)
   // 获取（月度）统计数据

@@ -70,7 +70,7 @@ class BillController extends BaseController {
         if (category_id !== 'all') {
           return (
             dayjs(item.datetime).format('YYYY-MM') === selected_month &&
-            category_id === item.category_id
+            category_id === String(item.category_id)
           )
         }
         return dayjs(item.datetime).format('YYYY-MM') === selected_month
@@ -81,22 +81,21 @@ class BillController extends BaseController {
         .reduce((curr, item) => {
           // 把第一个账单项的时间格式化为 YYYY-MM-DD
           const date = dayjs(item.datetime).format('YYYY-MM-DD')
-          // const date = item.datetime.split(' ')[0]
           // 如果能在累加的数组中找到当前项日期 date ，那么在数组中的加入当前项到 daily_bill 数组。当天账单
           if (
             curr?.findIndex(
-              (item) => dayjs(item.datetime).format('YYYY-MM-DD') === date
+              (item) => item.date === date
             ) > -1
           ) {
             const index = curr.findIndex(
-              (item) => dayjs(item.datetime).format('YYYY-MM-DD') === date
+              (item) => item.date === date
             )
             curr[index].daily_bill.push(item)
           }
           // 如果在累加的数组中找不到当前项日期的，那么再新建一项。
           if (
             curr?.findIndex(
-              (item) => dayjs(item.datetime).format('YYYY-MM-DD') === date
+              (item) => item.date === date
             ) === -1
           ) {
             curr.push({
@@ -112,8 +111,8 @@ class BillController extends BaseController {
             })
           }
           return curr
-        }, []) // curr 默认初始值是一个空数组 []
-        .sort((a, b) => dayjs(b.datetime).unix() - dayjs(a.datetime).unix()) // 时间倒序，最近的时间在第一项
+        }, [])
+        .sort((a, b) => dayjs(b.date).unix() - dayjs(a.date).unix()) // 时间倒序，最近的时间在第一项
 
       // 分页处理，listMap 格式化后的全部数据，还未分页
       const filter_list_map = list_map.slice(
@@ -257,7 +256,7 @@ class BillController extends BaseController {
         const timestamp = dayjs(item.datetime).unix()
         /**
          * 这里是闭区间，本月的 1 号 00:00:00，本月的月末 23:59:59。
-         * 添加往日收支记录，时间就记为 23:59:59，避免记入下月账单 */
+         * 添加往日收支记录，时间就记为 00:00:00 */
         if (timestamp >= start && timestamp <= end) {
           return item
         }

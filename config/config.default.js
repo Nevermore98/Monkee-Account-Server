@@ -60,8 +60,8 @@ module.exports = (appInfo) => {
   }
   // 文件接受方式有 file 和 stream
   config.multipart = {
-    mode: 'file'
-    // fileSize: '500kb' // TODO 上传文件大小
+    mode: 'file',
+    fileSize: '500kb' // 上传文件大小
   }
 
   config.cors = {

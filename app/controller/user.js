@@ -21,9 +21,9 @@ class UserController extends Controller {
       return
     }
     // 验证数据库内是否存在该账户名
-    const userInfo = await ctx.service.user.getUserByName(username)
+    const user_info = await ctx.service.user.getUserByName(username)
     // 判断是否存在
-    if (userInfo && userInfo.id) {
+    if (user_info && user_info.id) {
       ctx.body = {
         code: 500,
         msg: '账户名已被注册，请重新输入',
@@ -59,10 +59,10 @@ class UserController extends Controller {
   async login() {
     const { ctx, app } = this
     const { username, password } = ctx.request.body
-    const userInfo = await ctx.service.user.getUserByName(username)
-    console.log(userInfo)
+    const user_info = await ctx.service.user.getUserByName(username)
+    console.log(user_info)
     // 用户不存在
-    if (!userInfo || !userInfo.id) {
+    if (!user_info || !user_info.id) {
       ctx.body = {
         code: 500,
         msg: '账号不存在',
@@ -71,7 +71,7 @@ class UserController extends Controller {
       return
     }
     // 用户存在，比对输入密码与数据库中用户密码。
-    if (userInfo && password !== userInfo.password) {
+    if (user_info && password !== user_info.password) {
       ctx.body = {
         code: 500,
         msg: '账号密码错误',
@@ -83,8 +83,8 @@ class UserController extends Controller {
     // app.jwt.sign 方法接受两个参数，第一个为加密内容的对象，第二个是加密字符串（通过 app.config.jwt.secret 获取）
     const token = app.jwt.sign(
       {
-        id: userInfo.id,
-        username: userInfo.username,
+        id: user_info.id,
+        username: user_info.username,
         exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // token 有效期为 24 小时
       },
       app.config.jwt.secret
@@ -118,15 +118,15 @@ class UserController extends Controller {
     const { ctx, app } = this
     const token = ctx.request.header.authorization
     const decode = await app.jwt.verify(token, app.config.jwt.secret)
-    const userInfo = await ctx.service.user.getUserByName(decode.username)
+    const user_info = await ctx.service.user.getUserByName(decode.username)
     ctx.body = {
       code: 200,
       msg: '请求成功',
       data: {
-        id: userInfo.id,
-        username: userInfo.username,
-        signature: userInfo.signature || '',
-        avatar: userInfo.avatar || defaultAvatar
+        id: user_info.id,
+        username: user_info.username,
+        signature: user_info.signature || '',
+        avatar: user_info.avatar || defaultAvatar
       }
     }
   }
@@ -143,9 +143,9 @@ class UserController extends Controller {
       if (!decode) return
       user_id = decode.id
 
-      const userInfo = await ctx.service.user.getUserByName(decode.username)
+      const user_info = await ctx.service.user.getUserByName(decode.username)
       const result = await ctx.service.user.edit_user_info({
-        ...userInfo,
+        ...user_info,
         signature,
         avatar
       })
@@ -156,7 +156,7 @@ class UserController extends Controller {
         data: {
           id: user_id,
           signature,
-          username: userInfo.username,
+          username: user_info.username,
           avatar
         }
       }
@@ -183,9 +183,9 @@ class UserController extends Controller {
         return
       }
       user_id = decode.id
-      const userInfo = await ctx.service.user.getUserByName(decode.username)
+      const user_info = await ctx.service.user.getUserByName(decode.username)
 
-      if (old_pass !== userInfo.password) {
+      if (old_pass !== user_info.password) {
         ctx.body = {
           code: 400,
           msg: '原密码错误',
@@ -203,8 +203,17 @@ class UserController extends Controller {
         return
       }
 
-      const result = await ctx.service.user.modify_password({
-        ...userInfo,
+      if (old_pass === new_pass || old_pass === new_pass2) {
+        ctx.body = {
+          code: 400,
+          msg: '新密码不能与旧密码相同',
+          data: null
+        }
+        return
+      }
+
+      const result = await ctx.service.user.edit_user_info({
+        ...user_info,
         password: new_pass
       })
 
