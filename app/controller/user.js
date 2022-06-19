@@ -1,7 +1,7 @@
 'use strict'
 
 const defaultAvatar =
-  'https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/cat&duck.jpg'
+  'http://monkee.online:7009/public/upload/default-avatar.jpg'
 
 const Controller = require('egg').Controller
 const dayjs = require('dayjs')
